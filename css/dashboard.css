@@ -377,8 +377,27 @@ body {
 
 .overview-clubs-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: var(--space-4);
+}
+
+.grid-2x2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+}
+
+.slide-down {
+  animation: slideDown 0.5s var(--ease-out) forwards;
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+@keyframes slideDown {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .club-summary-card {
@@ -1509,5 +1528,11 @@ body {
   .class-card {
     min-width: 220px;
     padding: var(--space-3) var(--space-4);
+  }
+}
+/* Responsive adjustments for 2x2 grids */
+@media (max-width: 600px) {
+  .overview-clubs-grid, .grid-2x2, .classes-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
   }
 }

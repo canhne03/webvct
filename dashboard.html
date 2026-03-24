@@ -188,7 +188,6 @@
             <tr>
               <th>Họ tên</th>
               <th>Năm sinh</th>
-              <th>Giới tính</th>
               <th class="th-center">Đã đóng</th>
             </tr>
           </thead>
@@ -199,12 +198,9 @@
       <!-- Multi-month overview -->
       <div class="tuition-overview-section">
         <div class="section-heading">
-          <h3>📊 Tổng quát Học phí nhiều tháng</h3>
+          <h3>📊 Tổng quát Học phí</h3>
           <div class="overview-controls">
-            <label>Từ</label>
-            <input type="month" id="overview-from" class="month-input">
-            <label>Đến</label>
-            <input type="month" id="overview-to" class="month-input">
+            <select id="overview-month-select" class="select-input"></select>
           </div>
         </div>
         <div class="tuition-legend">
@@ -246,8 +242,6 @@
           <thead>
             <tr>
               <th>Họ tên</th>
-              <th>Năm sinh</th>
-              <th>Giới tính</th>
               <th>Cấp đai</th>
               <th>CLB</th>
               <th class="th-actions"></th>

@@ -144,11 +144,17 @@ const App = {
 
     // Student filter
     const filterClub = document.getElementById('filter-club');
-    if (filterClub) filterClub.innerHTML = `<option value="">Tất cả CLB</option>` + clubOptions;
+    if (filterClub) {
+      filterClub.innerHTML = clubOptions;
+      filterClub.value = "0011";
+    }
 
     // Tuition filter
     const tuitionFilter = document.getElementById('tuition-club-filter');
-    if (tuitionFilter) tuitionFilter.innerHTML = `<option value="">Tất cả CLB</option>` + clubOptions;
+    if (tuitionFilter) {
+      tuitionFilter.innerHTML = clubOptions;
+      tuitionFilter.value = "0011";
+    }
 
     // Month selectors
     const months = this.getAllMonths();
@@ -166,11 +172,13 @@ const App = {
       overviewMonth.value = months[months.length - 1] || '';
     }
 
-    // Multi-month overview defaults
-    const overviewFrom = document.getElementById('overview-from');
-    const overviewTo = document.getElementById('overview-to');
-    if (overviewFrom && months.length) overviewFrom.value = months[0];
-    if (overviewTo && months.length) overviewTo.value = months[months.length - 1];
+    // Tuition overview month defaults
+    const overMonthSel = document.getElementById('overview-month-select');
+    if (overMonthSel) {
+      overMonthSel.innerHTML = monthOptions;
+      overMonthSel.value = months[months.length - 1] || '';
+      overMonthSel.addEventListener('change', () => this.renderTuitionOverview());
+    }
 
     // Populate form selects
     this.populateFormSelects();
@@ -289,7 +297,7 @@ const App = {
         const total = clubStudents.length;
         const pct = total ? Math.round((clubPaid / total) * 100) : 0;
         return `
-          <div class="club-summary-card">
+          <div class="club-summary-card slide-down">
             <h4>${club.tenCLB}</h4>
             <div class="club-addr">${club.diaChi}</div>
             <div class="club-progress">
@@ -414,8 +422,6 @@ const App = {
             <strong>${vs.tenVS}</strong>
             <span class="status-badge suspended">Đã ngưng</span>
           </td>
-          <td>${vs.ngaySinh ? vs.ngaySinh.substring(0, 4) : '—'}</td>
-          <td>${vs.gioiTinh || '—'}</td>
           <td>
             <span class="belt-badge" style="background:${rankInfo.hexDai}15; color:${rankInfo.hexDai}">
               <span class="belt-dot" style="background:${rankInfo.hexDai}"></span>
@@ -646,7 +652,6 @@ const App = {
         <tr>
           <td><strong>${vs.tenVS}</strong></td>
           <td>${vs.ngaySinh ? vs.ngaySinh.substring(0, 4) : '—'}</td>
-          <td>${vs.gioiTinh || '—'}</td>
           <td>
             <div class="tuition-check">
               <input type="checkbox" ${isPaid ? 'checked' : ''}
@@ -677,47 +682,34 @@ const App = {
     this.renderTuitionOverview();
   },
 
-  /* ── Tuition Multi-month Overview ─────────────── */
   renderTuitionOverview() {
     const thead = document.getElementById('overview-thead');
     const tbody = document.getElementById('overview-tbody');
     if (!thead || !tbody) return;
 
-    const fromVal = document.getElementById('overview-from')?.value || '';
-    const toVal = document.getElementById('overview-to')?.value || '';
-
-    const allMonths = this.getAllMonths();
-    let months = allMonths;
-    if (fromVal && toVal) {
-      months = allMonths.filter(m => m >= fromVal && m <= toVal);
-    }
-    if (!months.length) {
+    const month = document.getElementById('overview-month-select')?.value || '';
+    if (!month) {
       thead.innerHTML = '';
-      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text-muted);">Không có dữ liệu</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text-muted);">Vui lòng chọn tháng</td></tr>';
       return;
     }
 
-    // Header with months
+    // Header for single month
     thead.innerHTML = `
       <tr>
         <th>Họ tên</th>
         <th>Năm sinh</th>
-        <th>Giới tính</th>
-        ${months.map(m => `<th style="text-align:center">${this.formatMonthShort(m)}</th>`).join('')}
+        <th style="text-align:center">Đã đóng (${this.formatMonthShort(month)})</th>
       </tr>`;
 
     const students = this.getMyStudents();
     tbody.innerHTML = students.map(vs => {
-      const cells = months.map(m => {
-        const isPaid = vs.hocPhi && vs.hocPhi[m];
-        return `<td class="${isPaid ? 'cell-paid' : 'cell-unpaid'}">${isPaid ? '✓' : '✗'}</td>`;
-      }).join('');
+      const isPaid = vs.hocPhi && vs.hocPhi[month];
       return `
         <tr>
           <td><strong>${vs.tenVS}</strong></td>
           <td>${vs.ngaySinh ? vs.ngaySinh.substring(0, 4) : '—'}</td>
-          <td>${vs.gioiTinh || '—'}</td>
-          ${cells}
+          <td class="${isPaid ? 'cell-paid' : 'cell-unpaid'}" style="text-align:center">${isPaid ? '✓' : '✗'}</td>
         </tr>`;
     }).join('');
   },
@@ -726,6 +718,7 @@ const App = {
   renderClasses() {
     const grid = document.getElementById('classes-grid');
     if (!grid) return;
+    grid.className = 'grid-2x2'; // Ensure 2x2 grid
 
     const clubs = this.getClubs();
     const students = this.getMyStudents();
@@ -742,7 +735,7 @@ const App = {
     grid.innerHTML = clubs.map(club => {
       const count = students.filter(vs => vs.msCLB === club.msCLB).length;
       return `
-        <div class="class-card" onclick="App.viewClass('${club.msCLB}')">
+        <div class="class-card slide-down" onclick="App.viewClass('${club.msCLB}')">
           <div class="class-card-header">
             <h4>${club.tenCLB}</h4>
             <span class="class-code">${club.msCLB}</span>
