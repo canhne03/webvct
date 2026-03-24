@@ -1128,9 +1128,9 @@ body {
   gap: var(--space-4);
 }
 
-@media (max-width: 600px) {
-  .info-grid {
-    grid-template-columns: 1fr;
+@media (max-width: 768px) {
+  .modal-body .info-grid {
+    grid-template-columns: 1fr !important;
     gap: var(--space-3);
   }
 }
@@ -1497,11 +1497,6 @@ body {
     padding: var(--space-3);
   }
 
-  .info-grid {
-    grid-template-columns: 1fr;
-    gap: var(--space-2);
-  }
-  
   .overview-clubs-grid,
   .recent-list,
   .classes-grid {
